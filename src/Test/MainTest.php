@@ -10,6 +10,8 @@ namespace Test;
 use Interfaces\TestInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\LockHandler;
+
 class MainTest implements TestInterface
 {
     /** @var  Filesystem */
@@ -35,6 +37,12 @@ class MainTest implements TestInterface
         $this->testDumpFile();
 
         $this->testMirror();
+
+        echo PHP_EOL;
+
+        $this->testLockHandler();
+
+        $this->testLockHandler();
     }
 
     private function getCacheDirectory()
@@ -51,6 +59,23 @@ class MainTest implements TestInterface
         catch(IOException $e)
         {
             echo "Error : ".$e->getPath();
+        }
+    }
+
+
+    public function testLockHandler()
+    {
+        $cacheDir = $this->getCacheDirectory();
+
+        $lockHandler = new LockHandler("process.lock", $cacheDir.DIRECTORY_SEPARATOR);
+
+        if(!$lockHandler->lock())
+        {
+            echo "test already locked".PHP_EOL;
+        }
+        else
+        {
+            echo "test not already locked".PHP_EOL;
         }
     }
 
